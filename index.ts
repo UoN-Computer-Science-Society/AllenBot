@@ -16,4 +16,23 @@ client.on('ready', () => {
     console.log('Allen\'s ready!')
 })
 
+const guildId = '828303655878000660'
+const guild = client.guilds.cache.get(guildId)
+let commands
+
+if (guild) {
+  commands = guild.commands
+} else {
+  commands = client.application?.commands
+}
+
+// Listens for messages typed
+client.on('messageCreate', (message) => {
+    if (message.content === 'test') {
+        message.reply({
+            content: 'successful',
+        })
+    }
+  })
+
 client.login(process.env.TOKEN)
