@@ -1,11 +1,10 @@
-import discordJS, {Intents} from 'discord.js'
-import WOKCommands from 'wokcommands'
-import path from 'path'
+import {Client, Collection, Intents} from 'discord.js'
 import dotenv from 'dotenv'
-//import testSchema from './test-schema'
+import fs from 'fs'
+import * as commandModules from "./commands"
 
 dotenv.config()
-const client = new discordJS.Client({
+export const client = new Client({ // Export so it can be used elsewhere
     intents: [
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGES,
@@ -15,45 +14,31 @@ const client = new discordJS.Client({
     ]
 })
 
-client.on('ready', async () => {
-  /*await mongoose.connect(
-    process.env.MONGO_URI || '',
-    {
-      keepAlive: true
-    })*/
-  const dbOptions = {
-    // These are the default values
-    keepAlive: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    //useFindAndModify: false
-  }
-  
-  const wok = new WOKCommands(client, {
-    // name of local folder for command files
-    commandsDir: path.join(__dirname, 'commands'),
-    typeScript: true,
-    testServers: ['828303655878000660', '934797001210605620'], // CSS Servers
-    /*
-    // passing in db options
-    dbOptions,
-    mongoUri: process.env.MONGO_URI,
-    */
-  })
+// Registering commands with client
+const commands = Object(commandModules)
 
-  wok.on('databaseConnected', async (connection, state) => {
-    const model = connection.models['wokcommands-languages']
-  
-    const results = await model.countDocuments()
-    console.log(results)
-  })
+// Client logs into Discord and waits for Slash command interactions
+client.once('ready', async () => {
+  console.log(`Allen's ready!`)  
+});
 
-  wok.on('commandException', (command, message, error) => {
-    console.log(`Oopsie, an error has occured when User ${command.user.id} executes "${command.name}". Error: `)
-    console.log(error)
-  })
-
-  const {slashCommands} = wok
-  console.log(`Allen\'s ready!`)
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isCommand()) {return;}
+  const {commandName} = interaction;
+  commands[commandName].execute(interaction, client) // passes client as well to commands 
 })
-client.login(process.env.TOKEN) 
+
+if (process.env.TOKEN)
+  client.login(process.env.TOKEN);
+else {
+  console.error('Token does not exist in environment!')
+  process.exit(1);
+}
+
+// Graceful closing of Allen
+process.on('SIGINT', function () {
+  process.stdout.write("Disconnecting from discord...\n");
+  client.destroy();
+  process.stdout.write("Allen is now going to sleep o/");
+  process.exit();
+});
