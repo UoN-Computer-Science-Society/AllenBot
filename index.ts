@@ -18,6 +18,7 @@ export const client = new Client({ // Export so it can be used elsewhere
 // Registering commands with client
 const commands = Object(commandModules)
 
+
 // Client logs into Discord and waits for Slash command interactions
 client.once('ready', async () => {
   console.log(`Allen's ready!`)  
@@ -30,7 +31,7 @@ client.on('interactionCreate', async interaction => {
 
 // Setup mongodb connection
 if (!process.env.MONGO_URI){
-  console.error('Mongo URI not found in Environmetn variables.');
+  console.error('Mongo URI not found in Environment variables.');
   process.exit(1);
 }
 const mongoClient = new MongoClient(process.env.MONGO_URI!)
@@ -64,3 +65,4 @@ process.on('SIGINT', function () {
   process.stdout.write("Allen is now going to sleep o/");
   process.exit();
 });
+

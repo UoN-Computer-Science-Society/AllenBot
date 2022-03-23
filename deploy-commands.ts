@@ -15,7 +15,7 @@ for (const module of Object.values<any>(commandModules)) {
 
 // Guild IDs and Client ID of Bot
 const clientId = '936874154429407233'
-const guildId = '828303655878000660'
+const guildId = ['828303655878000660', '934797001210605620']
 
 
 const rest = new REST({version: '9'}).setToken(process.env.TOKEN!)
