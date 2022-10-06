@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "notasecret" : "I"
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.ts",
     "run": "ts-node index.ts",
